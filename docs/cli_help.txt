@@ -1,0 +1,35 @@
+<b>droptextpp text file preprocessor</b>
+<b>
+Template Files Usage
+</b>
+    Template text files are named after the output file they create or update with ".TPP" inserted before their file extension.
+    They are dragged or pasted onto "<b>DROP TEXT pp.cmd</b>" in Windows file Explorer.
+    The command file may be copied from the installation folder (.droptextpp in the user's home directory) and/or
+    renamed as many times as needed for convenient access.
+
+    Template files can contain any mix of text lines to be copied to output and preprocessor directives starting
+    with a hash sign ('#') in column one. Dropping or pasting a template file onto the command file in file Explorer window
+    preprocesses its content and updates the output file.
+<b>
+Terminal Usage:</b>
+<b>
+           node %USERPROFILE%/.droptextpp/droptextpp.js [-h] source [-p]</b>
+
+where
+  <b>%USERPROFILE%</b> is automatically replaced by the path to the users home folder in a Windows command prompt terminal. Replace with <b>$HOME</b> in a bash terminal.
+  
+  <b>-h</b>    displays help - any other command line arguments passed to droptextpp are ignored.
+  
+  <b>source
+</b>
+    Specifies the file path of the source file to be read by the preprocessor.
+    Relative source paths in terminal are resolved against the current working directory, noting that
+    cut and paste or drop operations in the file explorer GUI generate absolute paths. 
+        
+    Source files must be encoded using "utf-8" with line terminators of ASCII CR, CRLF or LF characters.
+    Output files are  encoded using "utf-8" with LF characters as line terminators.
+    The -p option must be used if source is not a template file or a non-default output file path is required.
+
+  <b>-p</b>    Write (pipe) preprocessor output to standard output (stdout).
+    This option allows redirecting output to a location provided in the command line, or piping it to another process.
+    If this option is set, the source argument need not be a template file or have a file extension.
