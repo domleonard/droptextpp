@@ -16,19 +16,18 @@ A minimal preprocessor for generic text files. Run as a script under node with s
 1. Download `droptextpp` project files from its [GitHub repository](https://github.com/domleonard/droptextpp) by clicking on the green "Code" button in the repository followed by clicking on "Download ZIP" in the drop down. Windows refers to zip files as "compressed folders".
 2. Double click on the downloaded zip  to open it in Windows' file Explorer.
 3. Copy the "droptextpp-main" folder into an uncompresed folder of you choice.
-4. Double click on the **Win_install_single_user.cmd** command in the uncompressed folder. This installs droptextpp in you user profile (a.k.a. "home") folder in a subfolder called ".droptextpp" and opens the folder in file explorer. 
+4. Double click on the **Win_install_single_user.cmd** command in the uncompressed folder. This installs droptextpp in your user profile (typically located at `C:\Users\user_name`) in a subfolder called ".droptextpp" and then opens the install folder in file explorer. 
 5. Copy the `DROP TEXT pp.cmd` file from the installation folder to somewhere more conveniently accessible for later use (say the desktop for initial testing). The command file can be copied multiple times and/or renamed as well to make it more convenient access in file explorer. The command file executes the droptextpp preprocessor on a file drag and dropped, or copied or pasted, onto it. 
-
 
 **Single user Installation for Linux Mint**
 1. Download `droptextpp` files from [GitHub](https://github.com/domleonard/droptextpp) and unpack the zip file.
-2. Navigate to the _unpacked_ `droptttp` directory and open it in terminal
+2.  Navigate to the _unpacked_ `droptttp-main` directory and open it in terminal
 3. Copy and paste the following command into terminal and press `Enter`
     
         node linux_install_single_user.js
-		
-	This installs droptextpp in a `.droptextpp` folder in the user's home directory before opening it in a file explorer window.
-4. Copy the "Drop Text Preprocessor (TPP).desktop" desktop launcher file to any location in which it can be conveniently accessed. The launcher can be copied and/or renamed multiple times as may prove convenient. The launcher executes the droptextpp preprocessor on a file drag and dropped onto it. In the distro available for testing it did not work files copied and pasted onto the launcher - the paste option was not even presented when right clicking over the launcher in Nemo at time of writing.
+    		
+	This installs droptextpp in a `.droptextpp` folder in the user's home directory and then opens it in a file explorer window.
+4. Copy the "Drop Text Preprocessor (TPP).desktop" desktop launcher file to any location in which it can be conveniently accessed. The launcher can be copied and/or renamed multiple times as may prove convenient. The launcher executes the droptextpp preprocessor on a file drag and dropped onto it. In the distro available for testing, desktop launchers did **not** support copying and pasting files onto a launcher as an alternative to drag and drop operations on the same file.
 
 **Broken mouse Installation**
 
@@ -43,20 +42,18 @@ Delete the `.droptestpp` subfolder in your home directory. Copied versions of `D
 
 ## Template files
 
-Template files are a device to combine input and output files for text preprocesing into the name of the template file so it can be used in a single drag and drop operation used to run the text preprocssor:
+Template files are a device to combine input and output files for text preprocesing into the name of the template file so it can be used in a single drag and drop operation in File explorer to run the text preprocssor:
 
 1. Output file path: same as that of the template file - meaning template files produce output in the directory they're in. 
 2. Output file extension: that of the template file, which must itself have an explicit file extension.
-3. Output file name: that of the template file up to but not including the case insensitive string ".TPP" inserted into the template file's name immediately before its actual extension.
+3. Output file name: that of the template file up to but not including a case insensitive string, ".TPP", inserted into the template file's name immediately before its actual extension.
 
-### Template filename syntax
+File name syntax:
 
 > outputFilename.TPP.outputFileExtension
 
 
-### Example
-
- Drag and dropping "my-great-novel.TPP.txt" onto "DROP TEXT pp.cmd" would read lines from the TPP file and write output to "my-great-novel.txt" in the same folder as the template file.
+Example: Drag and dropping "my-great-novel.TPP.txt" onto "DROP TEXT pp.cmd" would read lines from the TPP file and write output to "my-great-novel.txt" in the same folder as the template file.
  
  ## General operation
  
@@ -68,7 +65,7 @@ Template files are a device to combine input and output files for text preproces
  
  Edit the template file, which can contain any mix of preprocessor directives and source lines of general text, to make changes.
  
- Drag and drop the template file onto the original or a copy of "DROP TEXT pp.cmd" to create or update the output file.
+ Drag and drop the template file onto the original or a copy of "DROP TEXT pp.cmd" (or equivalent launcher under Linux) to create or update the output file.
  
 ### Note
  
