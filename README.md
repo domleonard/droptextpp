@@ -1,7 +1,7 @@
 
 # `droptextpp`
 
-A minimal preprocessor for generic text files. Run as a script under node with support for drag and drop operation in Windows and Linux to bypass terminal command line input. Written to refactor code and other text files, it supports four directives: #include, #clone, #skip and #endskip
+A minimal preprocessor for generic text files. Run as a script under node with support for drag and drop operation in Windows to bypass terminal command line input. Written to refactor code and other text files, it supports four directives: #include, #clone, #skip and #endskip
 
 ## System requiremenets
 
@@ -19,7 +19,10 @@ A minimal preprocessor for generic text files. Run as a script under node with s
 4. Double click on the **Win_install_single_user.cmd** command in the uncompressed folder. This installs droptextpp in your user profile (typically located at `C:\Users\user_name`) in a subfolder called ".droptextpp" and then opens the install folder in file explorer. 
 5. Copy the `DROP TEXT pp.cmd` file from the installation folder to somewhere more conveniently accessible for later use (say the desktop for initial testing). The command file can be copied multiple times and/or renamed as well to make it more convenient access in file explorer. The command file executes the droptextpp preprocessor on a file drag and dropped, or copied or pasted, onto it. 
 
-**Single user Installation for Linux Mint**
+**Single user Installation for Linux**
+
+**Desktop launcher under Construction November 21 2025 - Linux usage restricted to terminal use pending updates**
+
 1. Download `droptextpp` files from [GitHub](https://github.com/domleonard/droptextpp) and unpack the zip file.
 2.  Navigate to the _unpacked_ `droptttp-main` directory and open it in terminal
 3. Copy and paste the following command into terminal and press `Enter`
@@ -29,9 +32,9 @@ A minimal preprocessor for generic text files. Run as a script under node with s
 	This installs droptextpp in a `.droptextpp` folder in the user's home directory and then opens it in a file explorer window.
 4. Copy the "Drop Text Preprocessor (TPP).desktop" desktop launcher file to any location in which it can be conveniently accessed. The launcher can be copied and/or renamed multiple times as may prove convenient. The launcher executes the droptextpp preprocessor on a file drag and dropped onto it. In the distro available for testing, desktop launchers did **not** support copying and pasting files onto a launcher as an alternative to drag and drop operations on the same file.
 
-**Broken mouse Installation**
+**Termial Use Installation**
 
-1. Grab a copy of `droptextpp.js` off Github and run it under node with the -p option at the end of the command line, redirecting output to the file you want to write over or pipe it to another command.
+1. Grab a copy of `droptextpp.js` off Github and run it under node in  a terminal using the command line syntax below.
 
 
 **Uninstall**
@@ -42,11 +45,12 @@ Delete the `.droptestpp` subfolder in your home directory. Copied versions of `D
 
 ## Template files
 
-Template files are a device to combine input and output files for text preprocesing into the name of the template file so it can be used in a single drag and drop operation in File explorer to run the text preprocssor:
+Template file names are a device to combine input and output file names for the text preprocessor into the name of the template file. Template files can then be dragged and dropped onto a text preprocessor command file in a single mouse operation.
 
-1. Output file path: same as that of the template file - meaning template files produce output in the directory they're in. 
-2. Output file extension: that of the template file, which must itself have an explicit file extension.
-3. Output file name: that of the template file up to but not including a case insensitive string, ".TPP", inserted into the template file's name immediately before its actual extension.
+1. Template files produce output in the directory they're in. 
+2. Template files must have a file extension and produce output files with the same extension.
+3. Template file names must contain ".TPP" (without quotes) immediately preceding their extension.
+
 
 File name syntax:
 
@@ -57,15 +61,11 @@ Example: Drag and dropping "my-great-novel.TPP.txt" onto "DROP TEXT pp.cmd" woul
  
  ## General operation
  
- Determine what file you want the preprocessor to create or overwrite.
- 
- If the file already exists, [create a backup copy and] rename the file to turn it into a template file - meaning insert ".TPP" immediately before its file extension.
- 
- If and only if the file doesn't exist, create an empty template file based on the name of the output file to be created.
- 
- Edit the template file, which can contain any mix of preprocessor directives and source lines of general text, to make changes.
- 
- Drag and drop the template file onto the original or a copy of "DROP TEXT pp.cmd" (or equivalent launcher under Linux) to create or update the output file.
+1. Determine what file you want the preprocessor to create or overwrite.
+ 1. If the file already exists, [create a backup copy and] rename the file to turn it into a template file - meaning insert ".TPP" immediately before its file extension.
+1. If and only if the file doesn't exist, create an empty template file based on the name of the output file to be created.
+1. Edit the template file, which can contain any mix of preprocessor directives and source lines of general text, to make changes.
+1. Drag and drop the template file onto the original or a copy of "DROP TEXT pp.cmd" (or equivalent OS launcher or shortcut) to create or update the output file.
  
 ### Note
  
@@ -74,9 +74,11 @@ Droptextpp updates the output file quietly. It does not ask permission to "overw
 
 ## Command line syntax
 
-### `node %USERPROFILE%/.droptextpp/droptextpp.js [-h] source [-p]`
+Windows:
+### `   node %USERPROFILE%/.droptextpp/droptextpp.js [-h] source [-p]`
 
-**%USERPROFILE%** = the value of Windows environment variable set to the absolute filepath of user's profile directory. Use '`~`' or appropriate equivalent for a Linux distro.
+Linux:
+### `   node ~/.droptextpp/droptextpp.js [-h] source [-p]`
 
   **-h**    displays help on the terminal - any other other command line arguments passed to droptextpp are ignored.
   

@@ -28,16 +28,18 @@ function copyFile(src, dir) {
     }
 // console.log("copyFile src: '%s', dir: '%s', dest: '%s'", src, dir, dest);
 }
-const appPath = path.resolve( __dirname, "./js/droptextpp.js");
-copyFile( appPath, installFolder);
+
+const license = path.resolve(__dirname, "./LICENSE.txt");
+  copyFile( license, installFolder);
+const readme = path.resolve(__dirname, "./README.md");
+  copyFile( readme, installFolder);
 const cli_help = path.resolve( __dirname, "./docs/cli_help.txt");
-copyFile( cli_help, installFolder);
+  copyFile( cli_help, installFolder);
+const appPath = path.resolve( __dirname, "./js/droptextpp.js");
+  copyFile( appPath, installFolder);
 const icon = path.resolve(__dirname, "./ico/droptextpp.png");
-copyFile( icon, installFolder);
-const license = path.resolve(__dirname, "./docs/LICENSE.txt");
-copyFile( license, installFolder);
-const readme = path.resolve(__dirname, "./docs/README.md");
-copyFile( license, installFolder);	
+  copyFile( icon, installFolder); 
+	
 
 // create desktop launcher
 
@@ -49,7 +51,7 @@ const execString = `${nodePath} ${scriptPath} ""%U""`;
 const launcherPath = path.resolve(installFolder, "./droptextpp.desktop");
 const launcher =
 `[Desktop Entry]
-Name="drop texT PreProcessor (TPP)"
+Name="Drop Text Preprocessor (TPP)"
 Comment="launcher for droptextpp with dropped file as argument"
 Exec=${execString}
 Icon=${path.resolve(installFolder, "./droptextpp.png")}
@@ -63,7 +65,7 @@ try {
 }
 catch( err) {
     console.error("An error occured writing desktop launcher", err);
-    exit(1);
+    process.exit(1);
 }
 try {
     fs.chmodSync( launcherPath, "744");
