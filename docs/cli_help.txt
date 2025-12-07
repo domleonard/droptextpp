@@ -1,24 +1,30 @@
-<b>droptextpp text file preprocessor</b>
+<b>Droptextpp text file preprocessor</b>
 <b>
 Template Files Usage
 </b>
     Template text files are named after the output file they create or update with ".TPP" inserted before their file extension.
-    They are dragged or pasted onto "<b>DROP TEXT pp.cmd</b>" in Windows file Explorer.
+    They are dragged or pasted onto "<b>Drop Text Preprocessor (TPP)</b>" command under Windows, or dragged onto the same named launcher under linux.
     The command file may be copied from the installation folder (.droptextpp in the user's home directory) and/or
     renamed as many times as needed for convenient access.
 
-    Template files can contain any mix of text lines to be copied to output and preprocessor directives starting
-    with a hash sign ('#') in column one. Dropping or pasting a template file onto the command file in file Explorer window
-    preprocesses its content and updates the output file.
+    Template files can contain any mix of text lines and preprocessor directives starting with a hash sign ('#') in column one.
+    Dropping or pasting a template file onto a command or desktop launcher preprocesses its content lines and updates or rewrites the output file.
+    Pasting files onto launchers is not implemented in linux at time of writing.
+
 <b>
 Terminal Usage:</b>
-<b>
-           node %USERPROFILE%/.droptextpp/droptextpp.js [-h] source [-p]</b>
+
+   Windows:       <b>node %USERPROFILE%/.droptextpp/droptextpp.js [-h] [-v] [-p] source</b>
+   linux:                    <b> node ~/.droptextpp/droptextpp.js [-h] [-v] [-p] source</b>
 
 where
-  <b>%USERPROFILE%</b> is automatically replaced by the path to the users home folder in a Windows command prompt terminal. Replace with <b>$HOME</b> in a bash terminal.
+  <b>%USERPROFILE%</b> in Windows is refers to the users home folder
   
   <b>-h</b>    displays help - any other command line arguments passed to droptextpp are ignored.
+  <b>-v</b>    displays the version of Droptextpp installed and exits.
+  <b>-p</b>    Write (pipe) preprocessor output to standard output (stdout).
+    This option allows redirecting output to a location provided in the command line, or piping it to another process.
+    If this option is set, the source argument need not be a template file or have a file extension.
   
   <b>source
 </b>
@@ -31,5 +37,4 @@ where
     The -p option must be used if source is not a template file or a non-default output file path is required.
 
   <b>-p</b>    Write (pipe) preprocessor output to standard output (stdout).
-    This option allows redirecting output to a location provided in the command line, or piping it to another process.
-    If this option is set, the source argument need not be a template file or have a file extension.
+    wiithout this option the source argument MUST be a template file and MUST have a file extension.

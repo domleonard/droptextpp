@@ -1,0 +1,1 @@
+File: testFolder/Unterminated_text_line.txt - this line is implicitly terminated by EOF, edit with care!

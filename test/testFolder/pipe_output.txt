@@ -1,0 +1,7 @@
+
+This is file "test/testFolder/pipe_output.txt"
+
+One of the uses of the -p option is to direct Droptextpp output lines to stdout,
+allowing it to be read it in a terminal without writing it to a file.
+
+End of Information

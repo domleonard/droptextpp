@@ -1,0 +1,5 @@
+test_ENOFILE_search.tpp.txt
+This file includes testFolder/ENOFILE_search.txt
+which includes "test_ENOFILE_include.tpp.txt" without specifying its directory
+which is only found by searching through the folder of previous includes.
+#include "testFolder/ENOFILE_search.txt"

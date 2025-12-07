@@ -1,0 +1,1 @@
+cmd.exe /k node %USERPROFILE%\.droptextpp\droptextpp.js -p "testFolder/test_EOF_line_terminator.txt"

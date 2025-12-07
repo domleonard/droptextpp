@@ -5,9 +5,10 @@ echo on
 mkdir %USERPROFILE%\.droptextpp
 copy LICENSE.txt %USERPROFILE%\.droptextpp
 copy README.md %USERPROFILE%\.droptextpp
-copy docs\cli_help.txt %USERPROFILE%\.droptextpp
+copy docs\win_cli_help.txt %USERPROFILE%\.droptextpp
+copy version.txt %USERPROFILE%\.droptextpp
 copy js\droptextpp.js %USERPROFILE%\.droptextpp
-copy "cmd\DROP TEXT pp.cmd" %USERPROFILE%\.droptextpp
+copy "cmd\Drop Text Preprocessor (TPP).cmd" %USERPROFILE%\.droptextpp
 copy "ico\droptextpp.ico" %USERPROFILE%\.droptextpp
 start explorer.exe %USERPROFILE%\.droptextpp
 pause The installation folder, %USERPROFILE%\.droptextpp is being opened. To dismiss this window

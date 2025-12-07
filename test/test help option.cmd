@@ -1,0 +1,1 @@
+cmd.exe /k node %USERPROFILE%\.droptextpp\droptextpp.js -h

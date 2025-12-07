@@ -1,0 +1,5 @@
+testfolder/ENOFILE_search.txt
+generate ENOFILE error by including a file that causes the error, but is not in this folder.
+however the include statement  doesn't specify a path - it's resolved by searching the directories of parent include file(s).
+
+#include "test_ENOFILE_include.tpp.txt"

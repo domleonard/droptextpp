@@ -1,5 +1,6 @@
 const fs = require("fs")
 const path = require("path");
+const cwd = process.cwd();
 
 // create install folder for single user (dot file in home directory)
 
@@ -16,9 +17,11 @@ catch( err) {
 
 // copy static files to install folder
 
-function copyFile(src, dir) {
+function winCopy(src, dir) {
     const filename = path.basename(src);
     const dest = path.join( dir, filename);
+    src = path.resolve(cwd, src);
+
     try {
         fs.copyFileSync( src, dest);
     }
@@ -28,37 +31,64 @@ function copyFile(src, dir) {
     }
 // console.log("copyFile src: '%s', dir: '%s', dest: '%s'", src, dir, dest);
 }
-
-const license = path.resolve(__dirname, "./LICENSE.txt");
-  copyFile( license, installFolder);
-const readme = path.resolve(__dirname, "./README.md");
-  copyFile( readme, installFolder);
-const cli_help = path.resolve( __dirname, "./docs/cli_help.txt");
-  copyFile( cli_help, installFolder);
-const appPath = path.resolve( __dirname, "./js/droptextpp.js");
-  copyFile( appPath, installFolder);
-const icon = path.resolve(__dirname, "./ico/droptextpp.png");
-  copyFile( icon, installFolder); 
+winCopy( "./LICENSE.txt", installFolder);
+winCopy( "./README.md", installFolder);
+winCopy( "./docs/gnu_cli_help.txt", installFolder);
+winCopy( "./version.txt", installFolder);
+winCopy( "./js/droptextpp.js", installFolder);
+winCopy( "./ico/droptextpp.png", installFolder);
 	
+// find gnome-terminal
 
+function findTerminal( terminalName = "gnome-terminal") {
+    const envPaths = process.env.PATH.split (':');
+
+    for(let dirName of envPaths) {
+        let dir;
+        try {
+            dir = fs.opendirSync(dirName);
+        }
+        catch(err) {
+            continue;
+        }
+        let dirent;
+        while (dirent = dir.readSync()) {
+            if( dirent.name == terminalName) {
+                const fullPath = path.resolve(dirName, terminalName);
+                try {
+                    fs.accessSync( fullPath, fs.constants.X_OK);
+                }
+                catch(err) {
+                    continue;
+                }
+                return fullPath;
+            }	
+        }    
+    } 
+    return null; 
+}
+const terminal = findTerminal();	
+if( !terminal) {
+    throw new Error("gnome-terminal not found in list of directories specified by environment PATH value")
+}
+					
 // create desktop launcher
 
 const nodePath = process.argv[0];
 const scriptPath = path.resolve(installFolder, "./droptextpp.js");
-const execString = `${nodePath} ${scriptPath} ""%U""`;
-
-
-const launcherPath = path.resolve(installFolder, "./droptextpp.desktop");
+const execString = `${terminal} --profile=keepopen -- ${nodePath} ${scriptPath} ""%U"" ; echo Press Enter to close terminal; read line`;
+const launcherPath = path.resolve(installFolder, "./Drop Text Preprocessor (TPP).desktop");
 const launcher =
 `[Desktop Entry]
 Name="Drop Text Preprocessor (TPP)"
 Comment="launcher for droptextpp with dropped file as argument"
 Exec=${execString}
 Icon=${path.resolve(installFolder, "./droptextpp.png")}
-Terminal=true
+Terminal=false
 Type=Application
 Name[en_AU]=Drop Text Preprocessor (TPP).desktop
 `; 
+//console.log(launcher)
 
 try {
     fs.writeFileSync( launcherPath, launcher);
@@ -81,5 +111,4 @@ console.log("droptextpp successfully installed in home subdirectory '.droptextpp
 var exec = require('child_process').exec;
 exec(`xdg-open "${installFolder}"`);
 process.exit(0);
-
 

@@ -1,0 +1,2 @@
+test_ENOFILE_clone.tpp.txt
+#clone "no such file"

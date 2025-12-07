@@ -1,0 +1,8 @@
+test_E_UNEXP_ENDSKIP.tpp.txt
+
+#skip
+this should be skipped,
+#endskip
+
+this #endskip should error:
+#endskip

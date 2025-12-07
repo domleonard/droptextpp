@@ -1,0 +1,1 @@
+cmd.exe /k "node %USERPROFILE%\.droptextpp\droptextpp.js -v test_blank_last_line.tpp.txt"

@@ -18,7 +18,7 @@ class DropTextpp {
 		if( !includePath  || includePath == '""') {
 			this.exitOnError( 'ECLONENOPATH');
 		}
-		const fsIncludePath = this.parseInclude(includePath); // may exit on error
+		const fsIncludePath = this.parseInclude(includePath, true); // may exit on error
 		let text;
 		
 		try {
@@ -47,16 +47,19 @@ class DropTextpp {
 			this.echoHelp();
 			process.exit(0);
 		}
+        if( this.opts.v) {
+            this.echoVersion();
+            process.exit(0);
+        }
         if( !this.opts.p && process.platform == "linux") {
             console.log('\n\n'); // linux desktop launcher can obscure about 2.33 lines of console output
         }
-
 		this.parent = null;
-		this.filePath = "@preprocesor input";
+		this.filePath = "source file inclusion";
 		this.lines = [`#include ${this.opts.sourceArg}`];
 		this.lineNo = 0;
-		this.activeArray.push(this);
-  }
+		this.includeLine = this.lines[0];
+    }
 	
 	createFromParent(parent) {
 		this.parent = parent;
@@ -65,17 +68,38 @@ class DropTextpp {
 	}
 	
 	echoHelp() {
-		let helpPath = path.resolve( __dirname, "cli-help.txt");
-		if(!fs.existsSync( helpPath)) {
-			helpPath = path.resolve( __dirname, "../DOCS/cli_help.txt"); // in GitHub repository
+        const fileName = process.platform == "win32" ? "win_cli_help.txt" : "gnu_cli_help.txt"
+        const help = this.echoRead( fileName);
+        console.log( help ? help : "undefined");
+        this.echoVersion();
+    }
+    echoRead( fileName) {
+        let filePath = path.resolve( __dirname, fileName);
+		if(!fs.existsSync( filePath)) {
+			filePath = path.resolve( __dirname, path.join("../docs", fileName))				; // in GitHub repository
 		}
-		let help = fs.readFileSync(helpPath, 'utf8');
-		help = help.replaceAll("<b>", "\x1b[1m");
-		help = help.replaceAll("</b>", "\x1b[22m");
-		console.log(help);
+		let text;
+        try {
+            text = fs.readFileSync(filePath, 'utf8');
+        }
+        catch( error) {
+            console.error("Unable to locate '%s' at '%s'", fileName, filePath);
+            return null;
+        }       
+		text = text.replaceAll("<b>", "\x1b[1m");
+		text= text.replaceAll("</b>", "\x1b[22m");
+		return text;
 	}
+    echoVersion() {
+        let text = this.echoRead("version.txt");
+        console.log( text || "undefined");
+    }
 	
-	exec() {	
+	exec() {
+		if( this.parent) {
+			this.activeArray.push(this);
+			this.activeIncludes[this.filePathKey] = this;
+		}			
 		const lines = this.lines;
 		this.skipStarts = [];
 		let skipPointer = -1;
@@ -121,26 +145,33 @@ class DropTextpp {
 		if(bSkipping) { 
 			let skipLineNos = this.skipStarts.map( lineNo => lineNo+1).join(", ");
 			this.exitOnError('ENOENDSKIP', null, skipLineNos);
-			
 		}
-
+		if( this.parent) {
+			this.activeArray.pop;
+			delete this.activeIncludes[this.filePathKey];
+		}
 	}
 	
 	exitOnError(eCode, errorInstance = null, hint="") {
 		if( this.activeArray.length ) {
 			console.error("\nInclude Stack:");
-			this.activeArray.forEach( (active, i) => {
-				console.error(`${i}. '${active.includeLine}'   at "${active.filePath}" line ${active.lineNo+1}`);
+			this.activeArray.forEach( (pp, i) => {
+				const parent = pp.parent;
+				if( parent) {
+					console.error(`${i}. '${parent.includeLine}'   at "${parent.filePath}" line ${parent.lineNo+1}`);
+				}
+				else {
+					console.error(`${i}. '${pp.includeLine}'   (source file)`);
+				}
 			});
 		}
 		else console.error("\nInclude Stack: \<empty\>");
 		
 		const errorLine = this.lines[this.lineNo];
-		let errorAt = "internally generated preprocessor directive"
-		let errorFrom = "processing CLI input arguments"
+		let errorAt = `"${this.filePath}" line ${this.lineNo+1}`;
+		let errorFrom = "";
 
-		if( this.parent) {
-			errorAt = `"${this.filePath}" line ${this.lineNo+1}`;
+		if( this.parent) {	
 			let includeLine = this.parent.includeLine;
 			let includeWhere = `"${this.parent.filePath} line ${this.parent.lineNo+1}`;
 			errorFrom = `'${includeLine}' at ${includeWhere}`;
@@ -148,7 +179,7 @@ class DropTextpp {
 
 		const eCodeMsg = {
 			ENO_EXT: "The command line source file requires a filetype extension (unless the -p option is piping output to stdout)",
-			ENO_FILE: "File not found: relative include files are resolved against directories of files on the Include stack, searched in reverse order to find a matching file. Relative files supplied on the terminal command line are resolved against the current working directory.",
+			ENO_FILE: "File not found: relative file paths in directives are resolved against directories of files on the Include stack, searched in reverse order to find a matching file before attempting to resolve them against the current working directory (CWD). Relative file paths from the terminal command line are resolved directly against the CWD.",
 
 			ENO_TPP_OR_PIPE: `Command lne source files must be a template files (unless the -p option is piping output to stdout)\n Template files are identified by inserting ".tpp" in the file name immediatey preceding its filetype extension, where ".tpp" is case insensitive.\n E.G. 'myfile.TPP.txt' is a template file whose  output will  be written to file 'myfile.txt'`,
 			ECYCLICINCLUDE: "Cyclic Inclusion: an included file cannot include itself or a file that results in an inclusion of itself",
@@ -180,38 +211,39 @@ class DropTextpp {
 		if( errorInstance) throw errorInstance;
 		process.exit(1);
 	}
-	
+		
 	getOpts(argv) {
 		//console.log("Array argv: ", argv);
-		const opts = { optCount: 0, otherCount: 0}; // length = number of options selected.
-		const validOpts = "hp"; // echo help file and exit, or write output to stdout for pipe or redirection
+		const opts = {otherArgs: []}; // length = number of options selected.
+		const validOpts = "hpv"; // echo help file and exit, or write output to stdout for pipe or redirection
 		const invalidOpts = [];
-		const reSwitch = /[\/-][a-zA-Z]\s*$/;
+		const reSwitch = /[\/-][a-zA-Z]*\s*$/;
 		const bError = false;
 		for(let i = 0; i < validOpts.length; ++i) {
 			opts[ validOpts[i]] = false;
 		}
-		for(let i = 0; i < argv.length; ++i) {
+		for(let i = 2; i < argv.length; ++i) {  // skip "node" and "droptextpp[.js"
 			let opt = argv[i];
 			if( reSwitch.test(opt)) {
-				let letter = opt[1];
-				// console.log("letter ", letter);
-				if(validOpts.indexOf(letter) >=0) {
-					opts[letter] = {opt, argvIndex: i};
-					++ opts.optCount;
+				let letters = opt.substring(1);
+				for (const letter of letters) {
+					if(validOpts.indexOf(letter) >=0) {
+						opts[letter] = {opt, argvIndex: i};
+					}
+					else invalidOpts.push( opt);
 				}
-				else invalidOpts.push( opt);
 			}
 			else {
-				++ opts.otherCount;
+				opts.otherArgs.push( argv[i]);
 			}
 		}
-		// console.log("switchOpts: ", opts);
+		
 		if( invalidOpts.length) {
 			console.error("\nError: Invalid command option(s) " + invalidOpts.join(", "));
 			process.exit(1);
 		}
-		opts.sourceArg = argv[2];
+		opts.sourceArg = opts.otherArgs[0];
+		//console.log("getOpts:  ", opts);
 		return opts;
 	}
 	
@@ -219,19 +251,15 @@ class DropTextpp {
 		if( !includePath  || includePath == '""') {
 			this.exitOnError( 'EINCNOPATH');
 		}
-		const fsIncludePath = this.parseInclude(includePath); // may exit on error
+		const fsIncludePath = this.parseInclude(includePath, false); // may exit on error
 		const filePathKey = this.fsInsensitive ? fsIncludePath.toLowerCase() : fsIncludePath;
 		if(this.activeIncludes[ filePathKey]) {
 			this.exitOnError("ECYCLICINCLUDE");
-		}
-
-		// console.log("include() fsIncludePath: ", fsIncludePath);
-		this.d = this.lines[this.lineNo];
+		}		
 		this.includePath = fsIncludePath;
 		if(!includePath) {
 			this.exitOnError( 'EINCNOPATH');
 		}
-
 		let includeLines;
 		try {
 			let lines = fs.readFileSync(fsIncludePath,'utf8');
@@ -243,14 +271,10 @@ class DropTextpp {
 		
 		// create a child preprocessor object to process the include.
 		const pp = new DropTextpp(this);
-		this.activeArray.push( pp);
-		this.activeIncludes[filePathKey] = pp;
 		pp.filePath = fsIncludePath;
 		pp.filePathKey = filePathKey;
 		pp.lines = includeLines;
 		pp.exec();
-		this.activeArray.pop();
-		delete this.activeIncludes[filePathKey];
 	}
 	
 	isFSInsensitive() {
@@ -267,27 +291,22 @@ class DropTextpp {
 	lineSplit(text) {
 		if( !text) return []; // empty file;
 		let lines = text.split(/\r\n|\r|\n/g);
-		let lastLine = lines[lines.length-1];
-		if(lastLine === "") {  // the file ended in a line terminator
-			lines.pop(); // don't output an additional blank line at the end.
-		}
 		return lines;
 	}
 
-	parseInclude(includePath) {
-		// console.log("\nparseInclude('%s')", includePath);
-		includePath = includePath.trim();
+	parseInclude(includePath, bClone) {
+		// console.log("parseInclude( %s, %s) ", includePath, bClone)
 		let firstChar = includePath[0];
 		let endChar = includePath[includePath.length-1];
 		if( firstChar == '"' && endChar == firstChar) {
 			includePath = includePath.slice(1,-1);
 		}
-
+		includePath = includePath.trim();
+		if(!includePath) {
+			this.exitOnError( bClone ? 'ECLONENOPATH' : 'EINCNOPATH');
+		}
 		this.includeLine = this.lines[this.lineNo];
 		this.includePath = includePath;
-		if(!includePath) {
-			this.exitOnError( 'EINCNOPATH');
-		}
 		let foundPath;
 		if(path.isAbsolute(includePath)) {
 			if( fs.existsSync(includePath)) {
@@ -295,15 +314,17 @@ class DropTextpp {
 				//console.log("includePath %s is Absolute foundPath: %s", includePath, foundPath);
 			}
 		}
+		else if( !this.parent) {
+			foundPath = path.resolve(includePath);
+		}
 		else {
-			for( let index = this.activeArray.length; --index;){
+			for( let index = this.activeArray.length-1; index >= 0; --index){
 				let pp = this.activeArray[index];
-				if( !pp.parent) break; // the command line preprocessor
 				let searchDir = path.dirname(pp.filePath);
 				let tryPath = path.join(searchDir, includePath)
 				if( fs.existsSync( tryPath)) {
 					foundPath = tryPath;
-					console.log("Stack path[%s] resolved %s to  %s", pp.filePath, includePath, foundPath);
+					//console.log("Stack path[%s] resolved %s to  %s", pp.filePath, includePath, foundPath);
 					break;
 				}
 			}
@@ -311,7 +332,7 @@ class DropTextpp {
 				let tryPath = path.resolve(includePath);
 				if(  fs.existsSync(tryPath)) {
 					foundPath = tryPath;
-					console.log("cwd resolved %s to %s", includePath, foundPath);
+					//console.log("cwd resolved %s to %s", includePath, foundPath);
 				}
 			}			
 		}
@@ -319,7 +340,7 @@ class DropTextpp {
 			this.exitOnError('ENO_FILE');
 		}
 	
-		if(!this.parent && !this.opts.p) {
+		if(!bClone && !this.parent && !this.opts.p) {
 			const oPath = path.parse(foundPath);
 			let ext  = oPath.ext;
 			if( ext == '.') {
@@ -341,11 +362,10 @@ class DropTextpp {
 		return foundPath;
 	}
 	writeOut() {
-		let text = "";
-		if( this.outLines.length) {
+		if( !this.outLines.length) {
 			this.outLines.push("");
 		}
-		text = this.outLines.join('\n');
+		let text = this.outLines.join('\n');
 		if( this.opts.p) {
 			fs.writeSync( process.stdout.fd, text);
 		}

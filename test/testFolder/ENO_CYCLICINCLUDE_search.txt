@@ -1,0 +1,4 @@
+ENO_CYCLICINCLUDE_search.txt
+include the file that included this one (searching previous include file directories to find it)
+
+#include "test_ENO_CYCLICINCLUDE.tpp.txt"

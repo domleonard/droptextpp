@@ -1,0 +1,8 @@
+File: testFolder/test_EOF_line_terminator.txt
+Purpose: include Unterminated_text_line by combinations of of include and clone directives
+         to test they are separated by a line feed and not concatenated into a single line:
+
+#include "Unterminated_text_line.txt"
+#include "Unterminated_text_line.txt"
+#clone "Unterminated_text_line.txt"
+#clone "Unterminated_text_line.txt"

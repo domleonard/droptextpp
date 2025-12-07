@@ -1,0 +1,36 @@
+<b>Droptextpp text file preprocessor</b>
+<b>
+Template File Usage
+</b>
+  Template text files use the name of their output file, including its extension, with ".TPP" inserted before the extension.
+  They may be drag and dropped onto a "<b>Drop Text Preprocessor (TPP)</b>" desktop launcher in the same or a separate Files window
+  (.desktop files do not implement copy and pasting files onto them at time of writing).
+  The launcher may be copied to different locations and/or renamed as needed to provide convenient access.
+
+  Template files can contain any mix of text lines and preprocessor directives starting with a hash sign ('#') in column one.
+  Dropping or pasting a template file onto a launcher will preprocess its content and update or rewrite its output file.
+
+<b>
+Terminal Usage:</b>
+
+       <b> node ~/.droptextpp/droptextpp.js [-h] [-v] [-p] source</b>
+
+where
+  
+  <b>-h</b>    displays help - any other command line arguments passed to droptextpp are ignored.
+  <b>-v</b>    displays the version of Droptextpp installed and exits.
+  <b>-p</b>    Write (pipe) preprocessor output to standard output (stdout).
+    This option allows reading Droptextpp output in the terminal without writing it to a file,
+    or redirecting it to a location provided in the command line, or piping it to another process.
+    Without specifying this option the source file MUST be a template file and MUST have a file extension.
+  
+  <b>source
+</b>
+    Specifies the file path of the source file to be read by the preprocessor.
+    Relative source paths in terminal are resolved against the current working directory, noting that
+    drag and drop operations onto a desktop launcher generate absolute paths. 
+        
+    Source files must be encoded using "utf-8" with line terminators of ASCII CR, CRLF or LF characters.
+    Output files are  encoded using "utf-8" with LF characters as line terminators.
+    The -p option must be used if source is not a template file and/or Droptextpp output is to be written to stdout.
+
