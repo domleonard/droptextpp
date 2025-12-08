@@ -20,7 +20,7 @@ This option if for terminal use only - mouse operation will not be installed.
 2. Grab copies of `version.txt` and the cli help file for your system (`gnu_cli_help.txt` or `win_cli_help.txt`) from the repository's `docs` folder and save them along side `droptextpp.js` in the same local directory.
 3. Run `droptextpp.js` in a terminal under node.
 
-    If the file to be preprocessed is not a [template file](#template_files) the [`-p`](#command_line_syntax) option for `droptexpp.js` must be provided in the terminal command line to write output to stdout &ndash; as in:
+    If the file to be preprocessed is not a [template file](#template-files) the [`-p`](#command-line-syntax) option for `droptexpp.js` must be provided in the terminal command line to write output to stdout &ndash; as in:
 
         node droptexpp.js -p sourcefile [ > outputfile]
 
@@ -119,7 +119,7 @@ where `%USERPROFILE%` is replaced by the user's home folder under Windows and `.
 : Write preprocessor output to standard output (stdout), allowing it to be read on the terminal, redirected to a file specified in the command line, or piped to a following process.
   
   **source**
- * Specifies the file path of the source file to be read by the preprocessor. Relative paths in the command line are [resolved](#Filepath_resolution) against the current working directory when the command is run.
+ * Specifies the file path of the source file to be read by the preprocessor. Relative paths in the command line are [resolved](#filepath-resolution) against the current working directory when the command is run.
  * If the `-p` option is not used, the source file must be a template file: the output file name is that of the template file with the '.TPP' component removed, and is written to the folder containing the template source.
  * If the `-p` option is used, the source file doesn't need to be template file and doesn't need to have a file extension.
  * The input file must be encoded using "utf-8" with line terminators of ASCII CR, CRLF or LF characters.
